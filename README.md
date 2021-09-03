@@ -164,7 +164,7 @@ repositories {
 }
 
 dependencies {
-    modImplementaion ("net.shadew:foxes:1.0") {
+    modImplementation ("net.shadew:foxes:1.0") {
         // Exclude Fabric API, presumably you already have this in your environment
         exclude group: "net.fabricmc"
         exclude group: "net.fabricmc.fabric-api"
