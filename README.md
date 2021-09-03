@@ -6,11 +6,19 @@ This simple mod adds more types of foxes to Minecraft.
 
 ![foxes](images/foxes.png)
 
+This is a Fabric mod. **I WILL NOT MAKE A FORGE PORT, PLEASE DO NOT ASK!**
+
+- Requires Fabric Loader 0.11.6 or higher
+- Requires Fabric API (preferably version 0.40.0 or higher)
+- Works on any full Minecraft 1.17 release
+
 ## Fox types
 
-This mod adds 6 new natural types, making a total of 8 natural types. In addition, it adds two skins for foxes with certain name tags.
+This mod adds 6 new natural types, making a total of 8 natural types. In addition, it adds two skins for foxes with
+certain name tags.
 
-Foxes have a certain chance to have a specific type when spawned in a certain biome (this can be modified in a data pack, see below).
+Foxes have a certain chance to have a specific type when spawned in a certain biome (this can be modified in a data
+pack, see below).
 
 ### Red fox (vanilla)
 
