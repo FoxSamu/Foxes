@@ -147,6 +147,27 @@ Example (`cross.json`):
 
 ## Other changes
 
-- This mod fixes [MC-170551](https://bugs.mojang.com/browse/MC-170551). Foxes can now properly spawn on podzol, dirt, or coarse dirt, making them much more common in giant tree taiga biomes.
-- Spawning a fox using a spawn egg in snowy biomes other than snowy taigas now spawns arctic types (in vanilla it will incorrectly spawn red foxes), by default using the same rates as in snowy taigas.
-- When the splash on the title screen reads `In case it wasn't obvious, foxes aren't players.`, it is replaced with `In case it wasn't obvious, foxes are players.`.
+- This mod fixes [MC-170551](https://bugs.mojang.com/browse/MC-170551). Foxes can now properly spawn on podzol, dirt, or
+  coarse dirt, making them much more common in giant tree taiga biomes.
+- Spawning a fox using a spawn egg in snowy biomes other than snowy taigas now spawns arctic types (in vanilla it will
+  incorrectly spawn red foxes), by default using the same rates as in snowy taigas.
+- When the splash on the title screen reads `In case it wasn't obvious, foxes aren't players.`, it is replaced
+  with `In case it wasn't obvious, foxes are players.`.
+
+## Using in your development environment
+
+You can download this mod in your development environment via my Maven repository.
+
+```gradle
+repositories {
+    maven { url "https://maven.shadew.net/" }
+}
+
+dependencies {
+    modImplementaion ("net.shadew:foxes:1.0") {
+        // Exclude Fabric API, presumably you already have this in your environment
+        exclude group: "net.fabricmc"
+        exclude group: "net.fabricmc.fabric-api"
+    }
+}
+```
