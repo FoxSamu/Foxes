@@ -1,0 +1,22 @@
+{
+  "taiga": 50,
+  "taiga_hills": 50,
+  "taiga_mountains": 50,
+
+  "giant_tree_taiga": 200,
+  "giant_spruce_taiga": 200,
+  "giant_tree_taiga_hills": 200,
+  "giant_spruce_taiga_hills": 200,
+
+  "snowy_taiga": 100,
+  "snowy_taiga_hills": 100,
+  "snowy_taiga_mountains": 100,
+  "snowy_tundra": 100,
+  "snowy_mountains": 100,
+  "snowy_beach": 100,
+  "frozen_river": 100,
+  "frozen_ocean": 100,
+  "deep_frozen_ocean": 100,
+
+  "<default>": 50
+}
