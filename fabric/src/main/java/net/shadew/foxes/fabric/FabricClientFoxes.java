@@ -14,15 +14,14 @@
  *    limitations under the License.
  */
 
-pluginManagement {
-    repositories {
-        maven { url "https://maven.fabricmc.net/" }
-        maven { url "https://maven.architectury.dev/" }
-        maven { url "https://files.minecraftforge.net/maven/" }
-        gradlePluginPortal()
+package net.shadew.foxes.fabric;
+
+import net.shadew.foxes.FoxTextures;
+
+public class FabricClientFoxes extends FabricFoxes {
+    @Override
+    public void init() {
+        super.init();
+        FoxTextures.init();
     }
 }
-
-include(":common")
-include(":fabric")
-include(":forge")

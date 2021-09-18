@@ -15,76 +15,69 @@
  */
 
 plugins {
-    id 'fabric-loom' version '0.9-SNAPSHOT'
+    id 'fabric-loom' version '0.9-SNAPSHOT' apply false
     id 'maven-publish'
+    id 'java'
+}
+
+subprojects {
+    if (project != project(":forge")) {
+        apply plugin: 'fabric-loom'
+        apply plugin: 'maven-publish'
+
+        sourceCompatibility = JavaVersion.VERSION_16
+        targetCompatibility = JavaVersion.VERSION_16
+
+        archivesBaseName = rootProject.archives_base_name
+        version = rootProject.mod_version + "+" + project.name
+        group = rootProject.maven_group
+
+        configurations {
+            embed {
+                transitive false
+            }
+        }
+
+        afterEvaluate {
+            jar {
+                from configurations.embed.collect { it.isDirectory() ? it : zipTree(it) }
+            }
+        }
+
+        dependencies {
+            minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+            mappings loom.officialMojangMappings()
+        }
+
+        processResources {
+            inputs.property "version", project.version
+
+            filesMatching("fabric.mod.json") {
+                expand "version": project.version
+            }
+        }
+
+        tasks.withType(JavaCompile).configureEach {
+            it.options.encoding = "UTF-8"
+
+            it.options.release = 16
+        }
+
+        java {
+            withSourcesJar()
+        }
+
+        jar {
+            from("LICENSE") {
+                rename { "${it}_${project.archivesBaseName}" }
+            }
+        }
+    }
 }
 
 sourceCompatibility = JavaVersion.VERSION_16
 targetCompatibility = JavaVersion.VERSION_16
 
-archivesBaseName = project.archives_base_name
-version = project.mod_version
-group = project.maven_group
-
-repositories {
-}
-
-dependencies {
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings loom.officialMojangMappings()
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-}
-
-processResources {
-    inputs.property "version", project.version
-
-    filesMatching("fabric.mod.json") {
-        expand "version": project.version
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    it.options.encoding = "UTF-8"
-
-    it.options.release = 16
-}
-
-java {
-    withSourcesJar()
-}
-
-jar {
-    from("LICENSE") {
-        rename { "${it}_${project.archivesBaseName}" }
-    }
-}
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            artifact(remapJar) {
-                builtBy remapJar
-            }
-            artifact(sourcesJar) {
-                builtBy remapSourcesJar
-            }
-        }
-    }
-
-    repositories {
-        if ("shwMavenUser" in project.properties && "shwMavenPass" in project.properties) {
-            maven {
-                name = "ShwMaven"
-                url = uri("https://maven.shadew.net/")
-                credentials {
-                    username = project.properties.shwMavenUser
-                    password = project.properties.shwMavenPass
-                }
-            }
-        } else {
-            mavenLocal()
-        }
-    }
-}
+archivesBaseName = rootProject.archives_base_name
+version = rootProject.mod_version
+group = rootProject.maven_group

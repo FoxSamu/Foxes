@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "minVersion": "0.8.2",
+  "package": "net.shadew.foxes.mixin",
+  "compatibilityLevel": "JAVA_16",
+  "mixins": ["MixinFoxType", "MixinServerResources", "MixinSpawnPlacements", "MixinVanillaPackResources"],
+  "client": [
+    "MixinFoxRenderer",
+    "MixinTitleScreen"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

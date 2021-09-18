@@ -1,0 +1,96 @@
+/*
+ * Copyright 2021 Shadew
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
+apply plugin: 'maven-publish'
+
+dependencies {
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
+
+    compileOnly(project(":common")) {
+        transitive = false
+    }
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+task copyCommonClasses(type: Copy) {
+    dependsOn project(":common").tasks.compileJava
+    dependsOn tasks.compileJava
+
+    from "${project(":common").buildDir}/classes/java/main"
+    into "${buildDir}/classes/java/main"
+}
+
+task copyCommonResources(type: Copy) {
+    dependsOn project(":common").tasks.processResources
+    dependsOn tasks.processResources
+
+    from "${project(":common").buildDir}/resources/main"
+    into "${buildDir}/resources/main"
+}
+
+classes {
+    dependsOn tasks.copyCommonClasses
+    dependsOn tasks.copyCommonResources
+}
+
+java {
+    withSourcesJar()
+}
+
+sourcesJar {
+    def commonSources = project(":common").sourcesJar
+    dependsOn commonSources
+    from commonSources.archiveFile.map { zipTree(it) }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = rootProject.archives_base_name
+            // add all the jars that should be included when publishing to maven
+            artifact(remapJar) {
+                classifier null
+            }
+            artifact(sourcesJar) {
+                builtBy remapSourcesJar
+            }
+        }
+    }
+
+    repositories {
+        if ("shwMavenUser" in rootProject.properties && "shwMavenPass" in rootProject.properties) {
+            maven {
+                name = "ShwMaven"
+                url = uri("https://maven.shadew.net/")
+                credentials {
+                    username = rootProject.properties.shwMavenUser
+                    password = rootProject.properties.shwMavenPass
+                }
+            }
+        }
+        else {
+            mavenLocal()
+        }
+    }
+}

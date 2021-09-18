@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[37,)"
+license="Apache License 2.0"
+
+[[mods]]
+modId="shwfox"
+version="${file.jarVersion}"
+displayName="Shadew's Foxes"
+displayURL="https://shadew.net/projects/foxes"
+logoFile="icon.png"
+authors="Shadew"
+description='''
+A mod that adds more fox types
+'''
+
+[[dependencies.shwfox]]
+    modId="forge"
+    mandatory=true
+    versionRange="[37,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.shwfox]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.17.1,1.18)"
+    ordering="NONE"
+    side="BOTH"

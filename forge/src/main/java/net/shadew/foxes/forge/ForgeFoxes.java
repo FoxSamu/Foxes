@@ -14,15 +14,19 @@
  *    limitations under the License.
  */
 
-pluginManagement {
-    repositories {
-        maven { url "https://maven.fabricmc.net/" }
-        maven { url "https://maven.architectury.dev/" }
-        maven { url "https://files.minecraftforge.net/maven/" }
-        gradlePluginPortal()
+package net.shadew.foxes.forge;
+
+import net.minecraft.server.packs.resources.ReloadableResourceManager;
+
+import net.shadew.foxes.Foxes;
+
+public class ForgeFoxes extends Foxes {
+    @Override
+    public boolean mustInjectResourceManagerNamespace() {
+        return false;
+    }
+
+    @Override
+    public void serverResourcesInit(ReloadableResourceManager resourceManager) {
     }
 }
-
-include(":common")
-include(":fabric")
-include(":forge")

@@ -1,0 +1,1 @@
+MixinConnector: net.shadew.foxes.forge.FoxMixinConnector

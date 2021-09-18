@@ -1,0 +1,186 @@
+/*
+ * Copyright 2021 Shadew
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+buildscript {
+    repositories {
+        maven { url 'https://maven.minecraftforge.net' }
+        maven { url 'https://repo.spongepowered.org/maven/' }
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'org.spongepowered', name: 'mixingradle', version: '0.7-SNAPSHOT'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle'
+apply plugin: 'eclipse'
+apply plugin: 'maven-publish'
+apply plugin: 'org.spongepowered.mixin'
+
+archivesBaseName = rootProject.archives_base_name
+version = rootProject.mod_version + "+" + project.name
+group = rootProject.maven_group
+
+// Mojang ships Java 16 to end users in 1.17+ instead of Java 8 in 1.16 or lower, so your mod should target Java 16.
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
+
+minecraft {
+    mappings channel: 'official', version: '1.17.1'
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'info'
+
+            mods {
+                shwfoxes {
+                    source sourceSets.main
+                }
+            }
+        }
+
+        server {
+            workingDirectory project.file('run')
+
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'info'
+
+            mods {
+                examplemod {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
+}
+
+mixin {
+    add sourceSets.main, "shwfox.refmap.json"
+
+    reobfSrgFile = file("${buildDir}/fixMcpToSrg/output.tsrg")
+}
+
+repositories {
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${rootProject.minecraft_version}-${rootProject.forge_version}"
+    annotationProcessor 'org.spongepowered:mixin:0.8.2:processor'
+
+    compileOnly(project(":common")) {
+        transitive = false
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+            [
+                "Specification-Title"     : "shwfoxes",
+                "Specification-Vendor"    : "shadew",
+                "Specification-Version"   : "1",
+                "Implementation-Title"    : "shwfoxes",
+                "Implementation-Version"  : project.version,
+                "Implementation-Vendor"   : "shadew",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "MixinConnector": "net.shadew.foxes.forge.FoxMixinConnector"
+            ]
+        )
+    }
+}
+
+jar.finalizedBy('reobfJar')
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = rootProject.archives_base_name
+            artifact jar
+        }
+    }
+    repositories {
+        if ("shwMavenUser" in rootProject.properties && "shwMavenPass" in rootProject.properties) {
+            maven {
+                name = "ShwMaven"
+                url = uri("https://maven.shadew.net/")
+                credentials {
+                    username = rootProject.properties.shwMavenUser
+                    password = rootProject.properties.shwMavenPass
+                }
+            }
+        }
+        else {
+            mavenLocal()
+        }
+    }
+}
+
+task copyCommonClasses(type: Copy) {
+    dependsOn project(":common").tasks.compileJava
+    dependsOn tasks.compileJava
+
+    from "${project(":common").buildDir}/classes/java/main"
+    into "${buildDir}/classes/java/main"
+}
+
+task copyCommonResources(type: Copy) {
+    dependsOn project(":common").tasks.processResources
+    dependsOn tasks.processResources
+
+    from "${project(":common").buildDir}/resources/main"
+    into "${buildDir}/resources/main"
+}
+
+classes {
+    dependsOn tasks.copyCommonClasses
+    dependsOn tasks.copyCommonResources
+}
+
+createMcpToSrg {
+    outputs.upToDateWhen {false}
+    doLast {
+        fixFG5TsrgForMixinAP(output.get().asFile, file("${buildDir}/fixMcpToSrg/output.tsrg"))
+    }
+}
+
+// Must do this so refmap always generates
+compileJava {
+    outputs.upToDateWhen {false}
+}
+
+// Mixin AP is not able to process ForgeGradle 5 TSRG yet, so this method translates the FG 5 TSRG into FG 3/4 TSRG, so
+// that the Mixin AP knows how to generate the refmap.
+//
+// FG 5 TSRG introduced a header line: 'tsrg left right', and a 'static' line under static methods. This method filters
+// those 'malicious' lines out.
+static def fixFG5TsrgForMixinAP(File inFile, File outFile) {
+    outFile.parentFile.mkdirs()
+    try (Scanner scanner = new Scanner(inFile); PrintWriter out = new PrintWriter(outFile)) {
+        boolean firstLine = true
+        while (scanner.hasNextLine()) {
+            String next = scanner.nextLine()
+            if (firstLine) { // Skip first 'tsrg left right' header line
+                firstLine = false
+                continue
+            }
+            if (next.trim() == "static") { // Skip 'static' indicators
+                continue
+            }
+            out.println(next)
+        }
+    }
+}

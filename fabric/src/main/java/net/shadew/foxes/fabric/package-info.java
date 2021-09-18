@@ -14,15 +14,8 @@
  *    limitations under the License.
  */
 
-pluginManagement {
-    repositories {
-        maven { url "https://maven.fabricmc.net/" }
-        maven { url "https://maven.architectury.dev/" }
-        maven { url "https://files.minecraftforge.net/maven/" }
-        gradlePluginPortal()
-    }
-}
-
-include(":common")
-include(":fabric")
-include(":forge")
+/**
+ * The part of Shadew's Foxes that interferes with the Fabric API. Only used if the Fabric API is present so that the
+ * resource reload listeners of this mod delegate via the Fabric API.
+ */
+package net.shadew.foxes.fabric;

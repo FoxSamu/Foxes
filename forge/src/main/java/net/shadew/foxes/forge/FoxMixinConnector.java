@@ -14,15 +14,14 @@
  *    limitations under the License.
  */
 
-pluginManagement {
-    repositories {
-        maven { url "https://maven.fabricmc.net/" }
-        maven { url "https://maven.architectury.dev/" }
-        maven { url "https://files.minecraftforge.net/maven/" }
-        gradlePluginPortal()
+package net.shadew.foxes.forge;
+
+import org.spongepowered.asm.mixin.Mixins;
+import org.spongepowered.asm.mixin.connect.IMixinConnector;
+
+public class FoxMixinConnector implements IMixinConnector {
+    @Override
+    public void connect() {
+        Mixins.addConfiguration("shwfox.mixins.json");
     }
 }
-
-include(":common")
-include(":fabric")
-include(":forge")
