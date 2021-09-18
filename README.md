@@ -6,10 +6,17 @@ This simple mod adds more types of foxes to Minecraft.
 
 ![foxes](images/foxes.png)
 
-This is a Fabric mod. **I WILL NOT MAKE A FORGE PORT, PLEASE DO NOT ASK!**
+The mod is available for both Forge and Fabric. **Make sure you download the correct version!**
+
+#### Fabric requirements
 
 - Requires Fabric Loader 0.11.6 or higher
-- Requires Fabric API (preferably version 0.40.0 or higher)
+- Works on any full Minecraft 1.17 release
+- Fabric API is not required, but recommended anyway
+
+#### Forge requirements
+
+- Requires Minecraft Forge 37.0.0 or higher
 - Works on any full Minecraft 1.17 release
 
 ## Fox types
@@ -158,16 +165,29 @@ Example (`cross.json`):
 
 You can download this mod in your development environment via my Maven repository.
 
+### Fabric
 ```gradle
 repositories {
     maven { url "https://maven.shadew.net/" }
 }
 
 dependencies {
-    modImplementation ("net.shadew:foxes:1.0") {
+    modImplementation ("net.shadew:foxes:1.1+fabric") {
         // Exclude Fabric API, presumably you already have this in your environment
         exclude group: "net.fabricmc"
         exclude group: "net.fabricmc.fabric-api"
     }
+}
+```
+
+### Forge
+
+```gradle
+repositories {
+    maven { url "https://maven.shadew.net/" }
+}
+
+dependencies {
+    implementation fg.deobf("net.shadew:foxes:1.1+forge")
 }
 ```
