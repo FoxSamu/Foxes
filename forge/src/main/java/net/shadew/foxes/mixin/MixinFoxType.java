@@ -16,26 +16,19 @@
 
 package net.shadew.foxes.mixin;
 
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.animal.Fox;
-import net.minecraft.world.level.biome.Biome;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.gen.Invoker;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.*;
 
-import net.shadew.foxes.FoxSpawnRates;
 import net.shadew.foxes.FoxTypeHook;
 
 @Mixin(Fox.Type.class)
 @SuppressWarnings("unused")
 public abstract class MixinFoxType implements FoxTypeHook {
-    @SafeVarargs
     @Invoker("<init>")
-    private static Fox.Type make(String _name, int _ordinal, int id, String name, ResourceKey<Biome>... biomes) {
+    private static Fox.Type make(String _name, int _ordinal, int id, String name) {
         throw new AssertionError();
     }
 
@@ -57,11 +50,6 @@ public abstract class MixinFoxType implements FoxTypeHook {
     @Mutable
     private static Map<String, Fox.Type> BY_NAME;
 
-    @Shadow
-    @Final
-    @Mutable
-    private List<ResourceKey<Biome>> biomes;
-
     @Unique
     private static void expandById(int newId) {
         if (BY_ID.length <= newId) {
@@ -78,11 +66,11 @@ public abstract class MixinFoxType implements FoxTypeHook {
     }
 
     @Override
-    public Fox.Type foxes_new(String _name, String name, ResourceKey<Biome>... biomes) {
+    public Fox.Type foxes_new(String _name, String name) {
         List<Fox.Type> variants = new ArrayList<>(Arrays.asList($VALUES));
         Fox.Type last = variants.get(variants.size() - 1);
 
-        Fox.Type newType = make(_name, last.ordinal() + 1, last.getId() + 1, name, biomes);
+        Fox.Type newType = make(_name, last.ordinal() + 1, last.getId() + 1, name);
         variants.add(newType);
 
         FoxTypeHook typeHook = FoxTypeHook.class.cast(newType);
@@ -95,29 +83,5 @@ public abstract class MixinFoxType implements FoxTypeHook {
 
         $VALUES = variants.toArray(Fox.Type[]::new);
         return newType;
-    }
-
-    @Inject(method = "byBiome", at = @At("HEAD"), cancellable = true)
-    private static void modifyByBiome(Optional<ResourceKey<Biome>> optional, CallbackInfoReturnable<Fox.Type> info) {
-        info.setReturnValue(FoxSpawnRates.pick(BIOME_RANDOM, optional.orElse(null)));
-    }
-
-    @Override
-    public List<ResourceKey<Biome>> foxes_getBiomes() {
-        return biomes;
-    }
-
-    @Override
-    public void foxes_addBiome(ResourceKey<Biome> biome) {
-        if (!(biomes instanceof ArrayList))
-            biomes = new ArrayList<>(biomes);
-
-        if (!biomes.contains(biome))
-            biomes.add(biome);
-    }
-
-    @Override
-    public boolean foxes_hasBiome(ResourceKey<Biome> biome) {
-        return biomes.contains(biome);
     }
 }

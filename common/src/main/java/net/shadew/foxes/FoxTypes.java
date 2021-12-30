@@ -27,4 +27,6 @@ public class FoxTypes {
     public static final Fox.Type GOLD_PLATINUM = FoxTypeHook.make("GOLD_PLATINUM", "gold_platinum");
     public static final Fox.Type GREY = FoxTypeHook.make("GREY", "grey");
     public static final Fox.Type CROSS = FoxTypeHook.make("CROSS", "cross");
+    public static final Fox.Type MARBLE = FoxTypeHook.make("MARBLE", "marble");
+    public static final Fox.Type BROWN_MARBLE = FoxTypeHook.make("BROWN_MARBLE", "brown_marble");
 }

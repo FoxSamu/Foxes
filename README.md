@@ -8,20 +8,20 @@ This simple mod adds more types of foxes to Minecraft.
 
 The mod is available for both Forge and Fabric. **Make sure you download the correct version!**
 
-#### Fabric requirements
+#### Fabric requirements (for version 1.2)
 
-- Requires Fabric Loader 0.11.6 or higher
-- Works on any full Minecraft 1.17 release
+- Requires Fabric Loader 0.12.12 or higher
+- Works on any full Minecraft release from 1.18.1 up to 1.19 (1.19 excluded)
 - Fabric API is not required, but recommended anyway
 
-#### Forge requirements
+#### Forge requirements (for version 1.2)
 
-- Requires Minecraft Forge 37.0.0 or higher
-- Works on any full Minecraft 1.17 release
+- Requires Minecraft Forge 39.0.0 or higher
+- Works on any full Minecraft release from 1.18.1 up to 1.19 (1.19 excluded)
 
 ## Fox types
 
-This mod adds 6 new natural types, making a total of 8 natural types. In addition, it adds two skins for foxes with
+This mod adds 8 new natural types, making a total of 10 natural types. In addition, it adds two skins for foxes with
 certain name tags.
 
 Foxes have a certain chance to have a specific type when spawned in a certain biome (this can be modified in a data
@@ -40,7 +40,7 @@ The most common type of fox, spawning in all taiga variants except snowy ones.
 
 ![arctic fox](images/arctic.png)
 
-The most common type of fox in snowy taiga biomes, highly dominating all other fox types there. Only spawns in snowy taiga biomes.
+The most common type of fox in snowy biomes, highly dominating all other fox types there. Only spawns in snowy biomes.
 
 - Type ID: `snow`
 - Summon: `/summon fox ~ ~ ~ {Type: snow}`
@@ -85,7 +85,7 @@ A rarer variant of the platinum fox, that spawns in any taiga, yet more commonly
 
 ![grey fox](images/grey.png)
 
-A relatively rare variant that spawns only in giant taiga biomes.
+A relatively rare variant that spawns only in old growth taiga biomes.
 
 - Type ID: `grey`
 - Summon: `/summon fox ~ ~ ~ {Type: grey}`
@@ -98,6 +98,24 @@ A common variant that spawns in all not-snowy taiga biomes.
 
 - Type ID: `cross`
 - Summon: `/summon fox ~ ~ ~ {Type: cross}`
+
+### Marble fox (since 1.2)
+
+![marble fox](images/marble.png)
+
+A rare variant that spawns in almost any biome but is more common in snowy biomes or old growth tree taiga biomes. It does not spawn in the grove biome.
+
+- Type ID: `marble`
+- Summon: `/summon fox ~ ~ ~ {Type: marble}`
+
+### Brown marble fox (since 1.2)
+
+![brown marble fox](images/brown_marble.png)
+
+A alternate variant to the grey marble fox, that spawns in almost any biome but is more common in snowy biomes or old growth tree taiga biomes. It does not spawn in the grove biome.
+
+- Type ID: `brown_marble`
+- Summon: `/summon fox ~ ~ ~ {Type: brown_marble}`
 
 ### Name tags
 
@@ -120,11 +138,12 @@ The JSON format looks like this (weights must be integers):
 {
   "biome_id": 300,
   "biome_id_2": 300,
-  "<default>": 300
+  "<default>": 300,
+  "<snow>": 300
 }
 ```
 
-If a biome is not defined for any fox type, it falls back to `<default>`. If at least one fox type defines a biome specifically, the other fox types are considered to have zero weight and will not spawn in that biome.
+If a biome is not defined for any fox type, it falls back to `<default>` or `<snow>`, based on whether the precipitation type of the biome is snow or not (or just `<default>` before 1.2). If at least one fox type defines a biome specifically, the other fox types are considered to have zero weight and will not spawn in that biome.
 
 If a file is not present in a data pack, it falls back to a file in another data pack, or the default data. It is recommended to specify a file for every type, and specify the same biomes in every file.
 
@@ -135,31 +154,30 @@ Note that the two special textures have no assigned type, and can hence not be d
 Example (`cross.json`):
 ```json
 {
-  "taiga": 700,
-  "taiga_hills": 700,
-  "taiga_mountains": 700,
-
-  "giant_tree_taiga": 1000,
-  "giant_spruce_taiga": 1000,
-  "giant_tree_taiga_hills": 1000,
-  "giant_spruce_taiga_hills": 1000,
-
-  "snowy_taiga": 0,
-  "snowy_taiga_hills": 0,
-  "snowy_taiga_mountains": 0,
-
-  "<default>": 700
+    "taiga": 700,
+    
+    "old_growth_pine_taiga": 1000,
+    "old_growth_spruce_taiga": 1000,
+    
+    "snowy_taiga": 0,
+    "grove": 0,
+    
+    "<default>": 700,
+    "<snow>": 0
 }
 ```
 
 ## Other changes
 
+- When the splash on the title screen reads `In case it wasn't obvious, foxes aren't players.`, it is replaced
+  with `In case it wasn't obvious, foxes are players.`.
+- This mod prevents foxes from freezing in powder snow, since they tend to walk into powder snow carelessly.
+
+In Minecraft 1.17 (1.1 and before):
 - This mod fixes [MC-170551](https://bugs.mojang.com/browse/MC-170551). Foxes can now properly spawn on podzol, dirt, or
   coarse dirt, making them much more common in giant tree taiga biomes.
 - Spawning a fox using a spawn egg in snowy biomes other than snowy taigas now spawns arctic types (in vanilla it will
   incorrectly spawn red foxes), by default using the same rates as in snowy taigas.
-- When the splash on the title screen reads `In case it wasn't obvious, foxes aren't players.`, it is replaced
-  with `In case it wasn't obvious, foxes are players.`.
 
 ## Using in your development environment
 
@@ -172,7 +190,7 @@ repositories {
 }
 
 dependencies {
-    modImplementation ("net.shadew:foxes:1.1+fabric") {
+    modImplementation ("net.shadew:foxes:1.2+fabric") {
         // Exclude Fabric API, presumably you already have this in your environment
         exclude group: "net.fabricmc"
         exclude group: "net.fabricmc.fabric-api"
@@ -188,6 +206,6 @@ repositories {
 }
 
 dependencies {
-    implementation fg.deobf("net.shadew:foxes:1.1+forge")
+    implementation fg.deobf("net.shadew:foxes:1.2+forge")
 }
 ```

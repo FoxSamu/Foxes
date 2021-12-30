@@ -1,0 +1,12 @@
+{
+  "taiga": 100,
+
+  "old_growth_pine_taiga": 300,
+  "old_growth_spruce_taiga": 300,
+
+  "snowy_taiga": 300,
+  "grove": 0,
+
+  "<default>": 100,
+  "<snow>": 200
+}

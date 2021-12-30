@@ -17,7 +17,6 @@
 package net.shadew.foxes;
 
 import com.mojang.datafixers.util.Either;
-import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import net.minecraft.resources.ResourceKey;
@@ -32,9 +31,11 @@ import java.util.Random;
 public class FoxSpawnRates {
 
     private static final Map<Fox.Type, FoxSpawnRates> REGISTRY = new HashMap<>();
-    private static final Map<ResourceKey<Biome>, Cache> CACHE = new HashMap<>();
+    private static final Map<ResourceLocation, Cache> CACHE = new HashMap<>();
 
     private final Map<ResourceLocation, Integer> weightMap = new HashMap<>();
+    private int defaultWeight;
+    private int snowDefaultWeight;
 
     private FoxSpawnRates() {
     }
@@ -47,11 +48,11 @@ public class FoxSpawnRates {
     }
 
     public void defaultWeight(int weight) {
-        weight(null, weight);
+        defaultWeight = weight;
     }
 
-    public void biomeWeight(ResourceKey<Biome> biome, int weight) {
-        weight(biome.location(), weight);
+    public void snowDefaultWeight(int weight) {
+        snowDefaultWeight = weight;
     }
 
     public void biomeWeight(String name, int weight) {
@@ -62,8 +63,16 @@ public class FoxSpawnRates {
         return weightMap.getOrDefault(biome, -1);
     }
 
+    public int defaultWeight(boolean snow) {
+        return snow ? snowDefaultWeight : defaultWeight;
+    }
+
     public int defaultWeight() {
-        return weight(null);
+        return defaultWeight;
+    }
+
+    public int snowDefaultWeight() {
+        return snowDefaultWeight;
     }
 
     public int biomeWeight(ResourceKey<Biome> biome) {
@@ -75,34 +84,40 @@ public class FoxSpawnRates {
     }
 
     public void config(Config config) {
-        for (Map.Entry<Either<ResourceLocation, Unit>, Integer> entry : config.weights().entrySet()) {
-            Either<ResourceLocation, Unit> either = entry.getKey();
+        for (Map.Entry<Either<ResourceLocation, Boolean>, Integer> entry : config.weights().entrySet()) {
+            Either<ResourceLocation, Boolean> either = entry.getKey();
             int weight = entry.getValue();
-            weight(either.left().orElse(null), weight);
+            either.right().ifPresent(b -> {
+                if (b) defaultWeight(weight);
+                else snowDefaultWeight(weight);
+            });
+            either.left().ifPresent(id -> {
+                weight(id, weight);
+            });
         }
     }
 
-    public static Fox.Type pick(Random random, ResourceKey<Biome> biome) {
-        if (biome == null) return Fox.Type.RED;
-
+    public static Fox.Type pick(Random random, ResourceLocation biome, Biome biomeInst) {
         Cache cache = CACHE.computeIfAbsent(biome, key -> {
             Map<Fox.Type, Integer> weights = new HashMap<>();
 
             int totalWeight = 0;
 
-            for (Map.Entry<Fox.Type, FoxSpawnRates> entry : REGISTRY.entrySet()) {
-                Fox.Type type = entry.getKey();
-                int weight = entry.getValue().biomeWeight(biome);
-                if (weight > 0) {
-                    totalWeight += weight;
-                    weights.put(type, weight);
+            if (biome != null) {
+                for (Map.Entry<Fox.Type, FoxSpawnRates> entry : REGISTRY.entrySet()) {
+                    Fox.Type type = entry.getKey();
+                    int weight = entry.getValue().weight(biome);
+                    if (weight > 0) {
+                        totalWeight += weight;
+                        weights.put(type, weight);
+                    }
                 }
             }
 
             if (weights.isEmpty() || totalWeight <= 0) {
                 for (Map.Entry<Fox.Type, FoxSpawnRates> entry : REGISTRY.entrySet()) {
                     Fox.Type type = entry.getKey();
-                    int weight = entry.getValue().defaultWeight();
+                    int weight = entry.getValue().defaultWeight(biomeInst.getPrecipitation() == Biome.Precipitation.SNOW);
                     if (weight > 0) {
                         totalWeight += weight;
                         weights.put(type, weight);
@@ -114,7 +129,7 @@ public class FoxSpawnRates {
         });
 
         if (cache.isEmpty()) {
-            return Fox.Type.RED;
+            return Fox.Type.byBiome(biomeInst);
         }
 
         int rand = random.nextInt(cache.total());
@@ -125,7 +140,7 @@ public class FoxSpawnRates {
                 return entry.getKey();
         }
 
-        return Fox.Type.RED;
+        return Fox.Type.byBiome(biomeInst);
     }
 
     public static FoxSpawnRates forType(Fox.Type type) {
@@ -137,12 +152,16 @@ public class FoxSpawnRates {
         REGISTRY.values().forEach(rates -> rates.weightMap.clear());
     }
 
-    public static record Config(Map<Either<ResourceLocation, Unit>, Integer> weights) {
-        public static final Codec<Either<ResourceLocation, Unit>> BIOME_CODEC = Codec.either(
+    public static record Config(Map<Either<ResourceLocation, Boolean>, Integer> weights) {
+        public static final Codec<Either<ResourceLocation, Boolean>> BIOME_CODEC = Codec.either(
             ResourceLocation.CODEC,
             Codec.STRING.flatXmap(
-                k -> k.equals("<default>") ? DataResult.success(Unit.INSTANCE) : DataResult.error("Invalid biome"),
-                k -> DataResult.success("<default>")
+                k -> k.equals("<default>")
+                     ? DataResult.success(Boolean.TRUE)
+                     : k.equals("<snow>")
+                       ? DataResult.success(Boolean.FALSE)
+                       : DataResult.error("Invalid biome"),
+                k -> k ? DataResult.success("<default>") : DataResult.success("<snow>")
             )
         );
 

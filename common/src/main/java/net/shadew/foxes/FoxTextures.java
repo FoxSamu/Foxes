@@ -77,5 +77,7 @@ public class FoxTextures {
         register(FoxTypes.GOLD_PLATINUM, "shwfox:gold_platinum_fox", "shwfox:gold_platinum_fox_sleep");
         register(FoxTypes.GREY, "shwfox:grey_fox", "shwfox:grey_fox_sleep");
         register(FoxTypes.CROSS, "shwfox:cross_fox", "shwfox:cross_fox_sleep");
+        register(FoxTypes.MARBLE, "shwfox:marble_fox", "shwfox:marble_fox_sleep");
+        register(FoxTypes.BROWN_MARBLE, "shwfox:brown_marble_fox", "shwfox:brown_marble_fox_sleep");
     }
 }
