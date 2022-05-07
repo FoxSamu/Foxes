@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Shadew
+ * Copyright 2022 Shadew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package net.shadew.foxes.mixin;
 
+import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.Fox;
@@ -34,13 +35,13 @@ public class MixinFox {
         at = @At(
             value = "INVOKE",
             target = "Lnet/minecraft/world/entity/animal/Fox$Type;" +
-                         "byBiome(Lnet/minecraft/world/level/biome/Biome;)" +
+                         "byBiome(Lnet/minecraft/core/Holder;)" +
                          "Lnet/minecraft/world/entity/animal/Fox$Type;"
         )
     )
-    private Fox.Type foxByType(Biome biome, ServerLevelAccessor level) {
+    private Fox.Type foxByType(Holder<Biome> biome, ServerLevelAccessor level) {
         Fox fox = Fox.class.cast(this);
-        ResourceLocation id = level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(biome);
+        ResourceLocation id = level.registryAccess().registryOrThrow(Registry.BIOME_REGISTRY).getKey(biome.value());
         return FoxSpawnRates.pick(fox.getRandom(), id, biome);
     }
 }

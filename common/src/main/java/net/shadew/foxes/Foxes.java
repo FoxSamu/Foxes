@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Shadew
+ * Copyright 2022 Shadew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package net.shadew.foxes;
 
 import com.google.common.reflect.Reflection;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
@@ -27,6 +27,7 @@ import net.minecraft.world.level.LevelAccessor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.List;
 import java.util.Random;
 
 public class Foxes {
@@ -35,6 +36,8 @@ public class Foxes {
 
     private static Foxes instance;
     private static Environment env;
+
+    private FoxRateLoader rateLoader;
 
     public Foxes() {
         if (instance != null) {
@@ -52,8 +55,10 @@ public class Foxes {
         Reflection.initialize(FoxTypes.class);
     }
 
-    public void serverResourcesInit(ReloadableResourceManager resourceManager) {
-        resourceManager.registerReloadListener(new FoxRateLoader());
+    public void serverResourcesInit(List<PreparableReloadListener> listeners) {
+        if (rateLoader == null)
+            rateLoader = new FoxRateLoader();
+        listeners.add(rateLoader);
     }
 
     public boolean mustInjectResourceManagerNamespace() {

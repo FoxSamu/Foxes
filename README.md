@@ -6,18 +6,21 @@ This simple mod adds more types of foxes to Minecraft.
 
 ![foxes](images/foxes.png)
 
-The mod is available for both Forge and Fabric. **Make sure you download the correct version!**
+The mod is available for Fabric, Forge support is discontinued. **Make sure you download the correct version!**
+
+#### Fabric requirements (for version 1.3)
+- Requires Fabric Loader 0.13 or higher
+- Should work on any full Minecraft release from 1.18.2 up to 1.19 until further notice (1.19 excluded)
+- Fabric API is not required, but recommended anyway
 
 #### Fabric requirements (for version 1.2)
-
 - Requires Fabric Loader 0.12.12 or higher
-- Works on any full Minecraft release from 1.18.1 up to 1.19 (1.19 excluded)
+- Works on Minecraft release 1.18.1 (mod may load on 1.18.2+ but will crash, use version 1.3)
 - Fabric API is not required, but recommended anyway
 
 #### Forge requirements (for version 1.2)
-
 - Requires Minecraft Forge 39.0.0 or higher
-- Works on any full Minecraft release from 1.18.1 up to 1.19 (1.19 excluded)
+- Works on Minecraft release 1.18.1 (mod may load on 1.18.2+ but will crash, use version 1.3 with Fabric instead, Forge support is discontinued)
 
 ## Fox types
 
@@ -123,9 +126,7 @@ Naming a fox "FoxShadew" gives it this heterochromia skin:
 
 ![shadew](images/shadew.png)
 
-Naming a fox "ZtereoHYPE" gives it this blue skin:
-
-![ztereo](images/ztereo.png)
+The blue skin you see in pictures exists in 1.2 and below but has been removed due to personal reasons. Sorry.
 
 ## Modifying spawn chances
 

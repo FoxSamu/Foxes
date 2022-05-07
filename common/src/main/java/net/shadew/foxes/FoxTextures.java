@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Shadew
+ * Copyright 2022 Shadew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.util.Map;
 
 public class FoxTextures {
     public static final FoxTextures SHADEW = new FoxTextures("shwfox:shadew_fox", "shwfox:shadew_fox_sleep");
-    public static final FoxTextures ZTEREO = new FoxTextures("shwfox:ztereo_fox", "shwfox:ztereo_fox_sleep");
 
     private static final Map<Fox.Type, FoxTextures> TEXTURES = new HashMap<>();
 
@@ -64,8 +63,6 @@ public class FoxTextures {
     public static FoxTextures getTextures(Fox fox) {
         if ("FoxShadew".equals(fox.getName().getContents()))
             return SHADEW;
-        if ("ZtereoHYPE".equals(fox.getName().getContents()))
-            return ZTEREO;
 
         return getTextures(fox.getFoxType());
     }

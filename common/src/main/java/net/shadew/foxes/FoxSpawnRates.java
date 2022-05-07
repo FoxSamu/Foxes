@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Shadew
+ * Copyright 2022 Shadew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package net.shadew.foxes;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.Fox;
@@ -97,7 +98,7 @@ public class FoxSpawnRates {
         }
     }
 
-    public static Fox.Type pick(Random random, ResourceLocation biome, Biome biomeInst) {
+    public static Fox.Type pick(Random random, ResourceLocation biome, Holder<Biome> biomeInst) {
         Cache cache = CACHE.computeIfAbsent(biome, key -> {
             Map<Fox.Type, Integer> weights = new HashMap<>();
 
@@ -117,7 +118,7 @@ public class FoxSpawnRates {
             if (weights.isEmpty() || totalWeight <= 0) {
                 for (Map.Entry<Fox.Type, FoxSpawnRates> entry : REGISTRY.entrySet()) {
                     Fox.Type type = entry.getKey();
-                    int weight = entry.getValue().defaultWeight(biomeInst.getPrecipitation() == Biome.Precipitation.SNOW);
+                    int weight = entry.getValue().defaultWeight(biomeInst.value().getPrecipitation() == Biome.Precipitation.SNOW);
                     if (weight > 0) {
                         totalWeight += weight;
                         weights.put(type, weight);

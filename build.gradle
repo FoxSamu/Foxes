@@ -21,7 +21,7 @@ plugins {
 }
 
 subprojects {
-    if (project != project(":forge")) {
+    if (!project.name.contains("forge")) {
         apply plugin: 'fabric-loom'
         apply plugin: 'maven-publish'
 

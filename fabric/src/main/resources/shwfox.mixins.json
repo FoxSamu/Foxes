@@ -3,7 +3,7 @@
     "minVersion": "0.8.2",
     "package": "net.shadew.foxes.mixin",
     "compatibilityLevel": "JAVA_17",
-    "mixins": ["MixinFox", "MixinFoxType", "MixinServerResources", "MixinVanillaPackResources"],
+    "mixins": ["MixinFox", "MixinFoxType", "MixinReloadableServerResources", "MixinVanillaPackResources"],
     "client": [
         "MixinFoxRenderer",
         "MixinTitleScreen"

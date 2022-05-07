@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Shadew
+ * Copyright 2022 Shadew
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ package net.shadew.foxes.fabric;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+
+import java.util.List;
 
 import net.shadew.foxes.FoxRateLoader;
 import net.shadew.foxes.Foxes;
@@ -35,7 +37,7 @@ public class FabricFoxes extends Foxes {
     }
 
     @Override
-    public void serverResourcesInit(ReloadableResourceManager resourceManager) {
+    public void serverResourcesInit(List<PreparableReloadListener> listeners) {
         // Do nothing, moved to init
     }
 
